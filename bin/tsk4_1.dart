@@ -18,8 +18,36 @@ var tokens = TokenData.fromJson(response.data);
 print(tokens);
   print(response.statusCode);
   print(response.data);
+  print("Logged in");
+  
+  var response2 = await httpClient.get('/',
+  options: Options(headers: {"Authorization": "Bearer ${tokens.access}"}),
+  );
+  print(response2.data);
+
+  await slp(5);
+  
+  var response3 = await httpClient.get('/',
+  options: Options(headers: {"Authorization": "Bearer ${tokens.access}"}),
+  );
+  print(response3.data);
+
+  var oldRefresh = tokens.refresh;
+  var res2 = await httpClient.post(
+    '/refresh',
+    data: tokens.toJson(),
+  );
+  print(res2.data);
+  var newRefresh = tokens.refresh;
+  print('Tokens diff: ${oldRefresh != newRefresh}');
+
   } on DioException catch(e){
-    print(e.message);
+    print("Error");
+    print(e.response?.data);
     print(e.response?.statusCode);
   }
+}
+
+slp(int sec) async{
+ await Future.delayed(Duration(seconds: sec));
 }
